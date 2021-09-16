@@ -6,8 +6,8 @@ import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.specification.RequestSpecification;
-import objects.Group;
-import objects.Token;
+import objectsAPI.Group;
+import objectsAPI.Token;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -20,7 +20,7 @@ import java.security.cert.X509Certificate;
 
 public class API {
     private static final String basePath = "api/2";
-    private String url = "https://localhost:510";
+    private static final String url = "https://localhost:510";
     private RequestSpecification reqSpec;
 
     public final class EndPoints{
@@ -33,38 +33,38 @@ public class API {
         this.reqSpec = new RequestSpecBuilder()
                 .setBaseUri(url)
                 .log(LogDetail.ALL)
-                .addFilter(new AllureRestAssured())
+//                .addFilter(new AllureRestAssured())
                 .build();
     }
 
-    public void init() {
-        TrustManager[] trustAllCerts = new TrustManager[] {
-                new X509TrustManager() {
-                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                        return new X509Certificate[0];
-                    }
-                    public void checkClientTrusted(
-                            java.security.cert.X509Certificate[] certs, String authType) {
-                    }
-                    public void checkServerTrusted(
-                            java.security.cert.X509Certificate[] certs, String authType) {
-                    }
-                }
-        };
-        try {
-            SSLContext sc = SSLContext.getInstance("SSL");
-            sc.init(null, trustAllCerts, new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-        } catch (GeneralSecurityException e) {
-        }
-        // Now you can access an https URL without having the certificate in the truststore
-        try {
-            URL url = new URL("https://localhost:510");
-        } catch (MalformedURLException e) {
-        }
-    }
+//    public void init() {
+//        TrustManager[] trustAllCerts = new TrustManager[] {
+//                new X509TrustManager() {
+//                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+//                        return new X509Certificate[0];
+//                    }
+//                    public void checkClientTrusted(
+//                            java.security.cert.X509Certificate[] certs, String authType) {
+//                    }
+//                    public void checkServerTrusted(
+//                            java.security.cert.X509Certificate[] certs, String authType) {
+//                    }
+//                }
+//        };
+//        try {
+//            SSLContext sc = SSLContext.getInstance("SSL");
+//            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+//            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+//        } catch (GeneralSecurityException e) {
+//        }
+//        // Now you can access an https URL without having the certificate in the truststore
+//        try {
+//            URL url = new URL("https://localhost:510");
+//        } catch (MalformedURLException e) {
+//        }
+//    }
 
-    @Step("getToken")
+//    @Step("getToken")
     public Token getToken(){
         Token response = RestAssured
                 .given()
@@ -78,7 +78,7 @@ public class API {
         return response;
     }
 
-    @Step("GET")
+//    @Step("GET")
     public Group getGroup(String token) {
         Group response = RestAssured
                 .given()
@@ -90,7 +90,7 @@ public class API {
         return response;
     }
 
-    @Step("CREATE")
+//    @Step("CREATE")
     public Group createGroup(String token, int companyId, String groupName) {
         Group response = RestAssured
                 .given()
