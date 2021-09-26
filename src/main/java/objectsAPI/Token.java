@@ -1,5 +1,9 @@
 package objectsAPI;
 
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Token {
     private String access_token;
     private Integer expires_in;
@@ -7,6 +11,18 @@ public class Token {
     private String token_type;
     private String refresh_token;
     private String scope;
+
+    public Token() {
+        }
+
+    public Token(String access_token, Integer expires_in, String guid, String token_type, String refresh_token, String scope) {
+        this.access_token = access_token;
+        this.expires_in = expires_in;
+        this.guid = guid;
+        this.token_type = token_type;
+        this.refresh_token = refresh_token;
+        this.scope = scope;
+    }
 
     public String getAccess_token() {
         return access_token;
