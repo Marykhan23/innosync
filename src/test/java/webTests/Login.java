@@ -1,9 +1,11 @@
 package webTests;
 
 import org.junit.jupiter.api.*;
+import webpages.LoginPage;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class Login extends BaseTest{
+    private LoginPage loginPage;
 
 //    @Test
 //    public void wd1(){
@@ -19,13 +21,13 @@ public class Login extends BaseTest{
 //        wd.quit();
 //    }
 
-    @Test
-    public void login(){
-        loginPage.inputUsername("tyson@gmail1.com");
-        loginPage.inputPassword("1qazXSW@");
-        loginPage.submit();
-//        wd.close();
-    }
+//    @Test
+//    public void login(){
+//        loginPage.inputUsername("tyson@gmail1.com");
+//        loginPage.inputPassword("1qazXSW@");
+//        loginPage.submit();
+////        wd.close();
+//    }
 
 //    @Test
 //    @DisplayName("Wrong username")

@@ -28,11 +28,11 @@ public class TestListener extends BaseTest implements TestWatcher {
     @Override
     public void testFailed(ExtensionContext context, Throwable cause) {
 //        TestWatcher.super.testFailed(context, cause);
-        makeScreenshotOnFailure(context.getTestMethod().get().getName());
+//        makeScreenshotOnFailure(context.getTestMethod().get().getName());
 
     }
-    @Attachment(value = "{testName} - screenshot", type = "image/png")
-    private byte[] makeScreenshotOnFailure(String testName) {
-        return ((TakesScreenshot) wd).getScreenshotAs(OutputType.BYTES);
-    }
+//    @Attachment(value = "{testName} - screenshot", type = "image/png")
+//    private byte[] makeScreenshotOnFailure(String testName) {
+//        return ((TakesScreenshot) wd).getScreenshotAs(OutputType.BYTES);
+//    }
 }

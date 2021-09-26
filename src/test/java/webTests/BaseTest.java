@@ -1,9 +1,12 @@
 package webTests;
 
+import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.logevents.SelenideLogger;
 import com.github.javafaker.Faker;
 import helpers.API;
 import helpers.TestListener1;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import io.qameta.allure.selenide.AllureSelenide;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,11 +22,11 @@ import webpages.LoginPage;
 
 import java.util.concurrent.TimeUnit;
 
+import static com.codeborne.selenide.Selenide.*;
+
 //@ExtendWith(TestListener.class)
 public class BaseTest {
-    public WebDriver wd;
-    public static LoginPage loginPage;
-    public static CreateAccountPage createAccountPage;
+
     public WebDriverWait wait;
     public Faker faker;
     public String token;
@@ -32,43 +35,31 @@ public class BaseTest {
 
     @BeforeAll
     public void setUp(){
-        WebDriverManager.chromedriver().setup();
-        wd = new ChromeDriver();
-        loginPage = new LoginPage(wd);
-        createAccountPage = new CreateAccountPage(wd);
-        wait = new WebDriverWait(wd,20);
         faker = new Faker();
+        SelenideLogger.addListener("AllureListener",
+                new AllureSelenide().screenshots(true).savePageSource(true));
+        Configuration.baseUrl = "https://localhost:510";
+        Configuration.timeout = 5000;
+        Configuration.headless = false;
+        Configuration.browser = "chrome";
+        Configuration.startMaximized = true;
 
+//        WebDriverManager.chromedriver().setup();
+//        wd = new ChromeDriver();
+//        loginPage = new LoginPage(wd);
+//        createAccountPage = new CreateAccountPage(wd);
+//        wait = new WebDriverWait(wd,20);
     }
 
     @BeforeEach
     public void init(){
-        API api  = new API();
-        token = api.getToken().getAccess_token();
-        wd.get("https://localhost:510");
-        wd.manage().window().maximize();
-        wd.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
+//        API api  = new API();
+//        token = api.getToken().getAccess_token();
+//        wd.get("https://localhost:510");
+//        wd.manage().window().maximize();
+//        wd.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
     }
 
-
-    private void chooseBrowser(String browserName){
-        switch (browserName){
-            case "chrome":
-                System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver.exe");
-                ChromeOptions opt = new ChromeOptions();
-                opt.setHeadless(true);
-                wd = new ChromeDriver();
-                break;
-            case "firefox":
-                System.setProperty("webdriver.gecko.driver", "src/main/resources/geckodriver.exe");
-                wd = new FirefoxDriver();
-                break;
-            case "edge":
-                System.setProperty("webdriver.edge.driver", "src/main/resources/msedgedriver.exe");
-                wd = new EdgeDriver();
-                break;
-        }
-    }
 
 //    public createUser(){
 //
@@ -90,8 +81,5 @@ public class BaseTest {
 //       return orgAdmin;
 //    }
 
-    @AfterEach
-    public void close(){
-        wd.quit();
-    }
+
 }

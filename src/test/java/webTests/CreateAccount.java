@@ -1,5 +1,7 @@
 package webTests;
 
+import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.Selenide;
 import helpers.API;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
@@ -11,9 +13,11 @@ import objectsAPI.Organization;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import webpages.CreateAccountPage;
+import webpages.LoginPage;
 
 import java.util.concurrent.TimeUnit;
-@ExtendWith(TestListener.class)
+//@ExtendWith(TestListener.class)
 @Epic("Web test epic")
 @Story("Story")
 @Feature("Feature")
@@ -23,25 +27,22 @@ public class CreateAccount extends BaseTest{
     Organization org;
     Account orgAdmin;
     Account orgAdmin2;
-
+    private CreateAccountPage createAccountPage;
+    private static LoginPage loginPage;
 
     @BeforeEach
     public void init(){
         api  = new API();
         token = api.getToken().getAccess_token();
         org = api.createOrganization(token, companyId);
-        orgAdmin = api.createAccount(token, companyId, "orgAdmin");
-//        orgAdmin2 = api.createAccount2(token, companyId, );
-        wd.get("https://localhost:510");
-        wd.manage().window().maximize();
-        wd.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
+        orgAdmin = api.createAccount(token, org.id, "orgAdmin");
+        loginPage = Selenide.open("/auth/login/", LoginPage.class);
     }
 
     @Test
-    @Step("Create Account")
     public void createAccount(){
         loginPage.login(orgAdmin.email, "1qazXSW@");
-        wd.get(String.format("https://localhost:510/sites/%d/accounts/create", org.id));
+        createAccountPage = Selenide.open(String.format("/sites/%d/accounts/create", org.id), CreateAccountPage.class);
         createAccountPage.firstName.sendKeys(faker.name().firstName());
         createAccountPage.lastName.sendKeys(faker.name().lastName());
         createAccountPage.email.sendKeys(faker.internet().safeEmailAddress());
@@ -52,7 +53,22 @@ public class CreateAccount extends BaseTest{
         createAccountPage.selectPasswordExpires("6");
         createAccountPage.selectLocale("Dutch");
         createAccountPage.saveButton.click();
-        wait.until(ExpectedConditions.invisibilityOf(createAccountPage.flashCreateAccountSuccess));
+        createAccountPage.flashCreateAccountSuccess.shouldBe(Condition.visible);
+
+    }
+
+    @Test
+    public void createAccountPasswordMismatch(){
+        loginPage.login(orgAdmin.email, "1qazXSW@");
+        createAccountPage = Selenide.open(String.format("/sites/%d/accounts/create", org.id), CreateAccountPage.class);
+        createAccountPage.firstName.sendKeys(faker.name().firstName());
+        createAccountPage.lastName.sendKeys(faker.name().lastName());
+        createAccountPage.email.sendKeys(faker.internet().safeEmailAddress());
+        String password = faker.internet().password(8,10,true,true);
+        createAccountPage.password.sendKeys(password);
+        createAccountPage.confirm.sendKeys(password+"1");
+        createAccountPage.saveButton.click();
+        createAccountPage.errPasswordMustMatch.shouldBe(Condition.visible);
 
     }
 

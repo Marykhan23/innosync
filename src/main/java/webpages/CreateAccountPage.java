@@ -1,77 +1,76 @@
 package webpages;
 
+import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.Select;
 
 public class CreateAccountPage extends BasePage{
-    public CreateAccountPage(WebDriver wd) {
-        super(wd);
-    }
     @FindBy(id = "first_name")
-    public WebElement firstName;
+    public SelenideElement firstName;
 
     @FindBy(id = "last_name")
-    public WebElement lastName;
+    public SelenideElement lastName;
 
     @FindBy(id = "email")
-    public WebElement email;
+    public SelenideElement email;
 
     @FindBy(id = "password")
-    public WebElement password;
+    public SelenideElement password;
 
     @FindBy(id = "confirm")
-    public WebElement confirm;
+    public SelenideElement confirm;
 
     @FindBy(id = "pw_expires")
-    public WebElement pwExpires;
+    public SelenideElement pwExpires;
 
     @FindBy(id = "mobile_phone")
-    public WebElement mobilePhone;
+    public SelenideElement mobilePhone;
 
     @FindBy(id = "locale")
-    public WebElement locale;
+    public SelenideElement locale;
 
     @FindBy(css = "button#account_submit")
-    public WebElement saveButton;
+    public SelenideElement saveButton;
 
     @FindBy(css = ".card-footer a[href=\"/sites/2/accounts/\"]")
-    public WebElement cancelButton;
+    public SelenideElement cancelButton;
 
     @FindBy(id = "shared_quota")
-    public WebElement sharedQuota;
+    public SelenideElement sharedQuota;
 
     @FindBy(id = "webdav")
-    public WebElement webdav;
+    public SelenideElement webdav;
 
     @FindBy(id = "send_welcome_email")
-    public WebElement sendWelcomeEmail;
+    public SelenideElement sendWelcomeEmail;
 
     @FindBy(id = "site_admin")
-    public WebElement siteAdmin;
+    public SelenideElement siteAdmin;
 
     @FindBy(id = "system_admin")
-    public WebElement systemAdmin;
+    public SelenideElement systemAdmin;
 
     @FindBy(id = "group_ids_chosen")
-    public WebElement addToGroups;
+    public SelenideElement addToGroups;
 
     @FindBy(id = "dept_shares_chosen")
-    public WebElement addToTeamShare;
+    public SelenideElement addToTeamShare;
 
     @FindBy(xpath = "//*[contains(text(), \"You successfully created a new account and user will be notified.\")]")
-    public WebElement flashCreateAccountSuccess;
+    public SelenideElement flashCreateAccountSuccess;
 
     @FindBy(xpath = "//*[contains(text(), \"Share was created successfully.\")]")
-    public WebElement flashCreateTeamShareSuccess;
+    public SelenideElement flashCreateTeamShareSuccess;
+
+    @FindBy(xpath = "//*[contains(text(), \"Passwords must match.\")]")
+    public SelenideElement errPasswordMustMatch;
 
     public void selectPasswordExpires(String expireHours){
-        Select expireList = new Select(pwExpires);
-        expireList.selectByValue(expireHours);
+        pwExpires.selectOptionByValue(expireHours);
     }
     public void selectLocale(String lang){
-        Select expireList = new Select(locale);
-        expireList.selectByVisibleText(lang);
+        locale.selectOptionContainingText(lang);
     }
 }
