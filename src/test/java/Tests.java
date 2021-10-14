@@ -20,7 +20,7 @@ public class Tests {
     API api  = new API();
 //    String ssl = api.init();
     int companyId = 3;
-    String token = api.getToken().getAccess_token();
+//    String token = api.getToken().getAccess_token();
 
 
     public Tests() throws NoSuchAlgorithmException, KeyManagementException {
@@ -33,16 +33,16 @@ public class Tests {
 //
 //    }
 
-    @Test
-    public void test(){
-        String groupName = RandomStringUtils.randomAlphanumeric(6);
-        System.out.println("Initial" + groupName);
-        Group group = api.createGroup(token, companyId, groupName);
-        Assertions.assertEquals(groupName, group.name);
-        Assertions.assertTrue(group.active);
-        Assertions.assertEquals("group", group.type);
-
-    }
+//    @Test
+//    public void test(){
+//        String groupName = RandomStringUtils.randomAlphanumeric(6);
+//        System.out.println("Initial" + groupName);
+//        Group group = api.createGroup(token, companyId, groupName);
+//        Assertions.assertEquals(groupName, group.name);
+//        Assertions.assertTrue(group.active);
+//        Assertions.assertEquals("group", group.type);
+//
+//    }
 
 
 }

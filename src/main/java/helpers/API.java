@@ -1,24 +1,17 @@
 package helpers;
 
 import com.github.javafaker.Faker;
-import io.qameta.allure.Step;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
+import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import objectsAPI.Account;
 import objectsAPI.Group;
 import objectsAPI.Organization;
 import objectsAPI.Token;
-
-import javax.net.ssl.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.security.GeneralSecurityException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
+import java.io.Serializable;
 import java.util.Map;
 
 public class API {
@@ -27,12 +20,13 @@ public class API {
     private RequestSpecification reqSpec;
 
     public final class EndPoints{
-        private static final String token = "/oauth/token";
-        private static final String getGroup = "/api/2/group/{groupId}";
-        private static final String createGroup = "/api/2/group/create";
-        private static final String createOrganization = "/api/2/organization/{parentId}/organizations/create";
-        private static final String deleteOrganization = "/api/2/organization/{orgId}/delete";
-        private static final String createAccount = "/api/2/person/create";
+        private static final String tokenUrl = "/oauth/token";
+        private static final String getGroupUrl = "/api/2/group/{groupId}";
+        private static final String createGroupUrl = "/api/2/group/create";
+        private static final String createOrganizationUrl = "/api/2/organization/{parentId}/organizations/create";
+        private static final String deleteOrganizationUrl = "/api/2/organization/{orgId}/delete";
+        private static final String createAccountUrl = "/api/2/person/create";
+        private static final String getAccountUrl = "/api/2/person/{accountId}";
     }
 
     public API(){
@@ -45,22 +39,18 @@ public class API {
         RestAssured.useRelaxedHTTPSValidation();
     }
 
-    //    @Step("getToken")
-    public Token getToken(){
+    public Token getToken(String email, String password){
         Token response = RestAssured
                 .given()
-                .basePath(EndPoints.token)
+                .basePath(EndPoints.tokenUrl)
                 .params("grant_type", "password", "client_id", "anchor"
-                        , "username", "admin@admin.com", "password", "1qazXSW@")
+                        , "username", email, "password", password)
 //                .post().getBody().jsonPath().getString("access_token");
-                .log().all()
                 .post().as(Token.class);
         System.out.println(response);
         return response;
-
     }
 
-//    @Step("GET")
     public Group getGroup(String token) {
         Group response = RestAssured
                 .given()
@@ -71,11 +61,10 @@ public class API {
         return response;
     }
 
-//    @Step("CREATE")
     public Group createGroup(String token, int companyId, String groupName) {
         Group response = RestAssured
                 .given()
-                .basePath(EndPoints.createGroup)
+                .basePath(EndPoints.createGroupUrl)
                 .params("company_id", companyId, "name", groupName)
                 .auth().oauth2(token)
                 .post().as(Group.class);
@@ -83,9 +72,9 @@ public class API {
     }
 
     public Organization createOrganization(String token, int orgId) {
-        Organization response = RestAssured
+        Response response = RestAssured
                 .given()
-                .basePath(EndPoints.createOrganization)
+                .basePath(EndPoints.createOrganizationUrl)
                 .pathParams("parentId", orgId)
                 .params(
                         "name", new Faker().company().name(),
@@ -94,14 +83,17 @@ public class API {
                         "slug",new Faker().company().name()
                 )
                 .auth().oauth2(token)
-                .post().as(Organization.class);
-        return response;
+                .post();
+        System.out.println(response.asString());
+        Organization org = response.as(Organization.class);
+        System.out.println(org);
+        return org;
     }
 
     public Organization deleteOrganization(String token, int orgId) {
         Organization response = RestAssured
                 .given()
-                .basePath(EndPoints.deleteOrganization)
+                .basePath(EndPoints.deleteOrganizationUrl)
                 .pathParams("orgId", orgId)
                 .auth().oauth2(token)
                 .post().as(Organization.class);
@@ -109,31 +101,44 @@ public class API {
     }
 
     public Account createAccount(String token, int orgId, String userType) {
+        String password = new Faker().internet().password(8,10,true,true);
         Account response = RestAssured
                 .given()
-                .basePath(EndPoints.createAccount)
+                .basePath(EndPoints.createAccountUrl)
                 .params(
                         "company_id", orgId,
                         "email", new Faker().internet().safeEmailAddress(),
                         "first_name", new Faker().name().firstName(),
                         "last_name",new Faker().name().lastName(),
-                        "password", "1qazXSW@",/*new Faker().internet().password(8,10,true,true),*/
-//                        "site_admin", true,
+                        "password", password,
                         "site_admin", userType == "orgAdmin",
                         "system_admin", userType == "sysAdmin"
                 )
                 .auth().oauth2(token)
                 .post().as(Account.class);
+        response.password = password;
+        System.out.println(response);
         return response;
     }
 
-    public Account createAccount2(String token,Map<String, String> params) {
+    public Account createAccount2(String token,Map<String, ? extends Serializable> params) {
         Account response = RestAssured
                 .given()
-                .basePath(EndPoints.createAccount)
+                .basePath(EndPoints.createAccountUrl)
                 .params(params)
                 .auth().oauth2(token)
                 .post().as(Account.class);
         return response;
     }
-}
+
+    public Account getAccount(String token, String accountId) {
+        Account acc = RestAssured
+                .given()
+                .basePath(EndPoints.getAccountUrl)
+                .pathParams("accountId", accountId)
+                .auth().oauth2(token)
+                .get().as(Account.class);
+        return acc;
+    }
+
+  }
